@@ -6,12 +6,12 @@ import { useNavigate } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   const navigate = useNavigate();
+
   const handleLinkClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (onNavigate) {
-      onNavigate('coming-soon');
-    }
+    navigate('/coming-soon');
   };
+
 
   return (
     <footer className="bg-black text-white py-20">
@@ -27,10 +27,6 @@ const Footer: React.FC = () => {
               <a href="#" onClick={handleLinkClick} className="p-2 bg-gray-900 rounded-full hover:bg-violet-600 transition-colors"><Twitter size={18} /></a>
               <a href="#" onClick={handleLinkClick} className="p-2 bg-gray-900 rounded-full hover:bg-violet-600 transition-colors"><Facebook size={18} /></a>
               <a href="#" onClick={handleLinkClick} className="p-2 bg-gray-900 rounded-full hover:bg-violet-600 transition-colors"><Youtube size={18} /></a>
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/coming-soon'); }} className="p-2 bg-gray-900 rounded-full hover:bg-violet-600 transition-colors"><Instagram size={18} /></a>
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/coming-soon'); }} className="p-2 bg-gray-900 rounded-full hover:bg-violet-600 transition-colors"><Twitter size={18} /></a>
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/coming-soon'); }} className="p-2 bg-gray-900 rounded-full hover:bg-violet-600 transition-colors"><Facebook size={18} /></a>
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/coming-soon'); }} className="p-2 bg-gray-900 rounded-full hover:bg-violet-600 transition-colors"><Youtube size={18} /></a>
             </div>
           </div>
 

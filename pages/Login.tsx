@@ -1,10 +1,44 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, RefreshCw, ShieldCheck, Database, Zap, HelpCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, HelpCircle, RefreshCw, ShieldCheck, Zap } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
+    const { signInWithGoogle, signInWithEmail } = useAuth();
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleEmailLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            setError('');
+            setLoading(true);
+            await signInWithEmail(email, password);
+            navigate('/dashboard');
+        } catch (err: any) {
+            setError(err.message || 'Failed to log in. Please check your credentials.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            setError('');
+            setLoading(true);
+            await signInWithGoogle();
+            navigate('/dashboard');
+        } catch (err: any) {
+            setError(err.message || 'Failed to sign in with Google.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-white flex flex-col lg:flex-row">
@@ -42,10 +76,23 @@ const Login: React.FC = () => {
                             <p className="text-gray-500">Sign in to your EDITH dashboard.</p>
                         </div>
 
-                        <form className="space-y-6">
+                        {error && (
+                            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                                {error}
+                            </div>
+                        )}
+
+                        <form className="space-y-6" onSubmit={handleEmailLogin}>
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Email Address</label>
-                                <input type="email" placeholder="you@company.com" className="w-full bg-gray-50 border-gray-200 focus:border-violet-600 focus:ring-violet-600 rounded-xl px-4 py-3 outline-none transition-all placeholder:text-gray-400 font-medium" />
+                                <input
+                                    type="email"
+                                    placeholder="you@company.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    className="w-full bg-gray-50 border border-gray-200 focus:border-violet-600 focus:ring-2 focus:ring-violet-600/20 rounded-xl px-4 py-3 outline-none transition-all placeholder:text-gray-400 font-medium"
+                                />
                             </div>
 
                             <div>
@@ -53,12 +100,23 @@ const Login: React.FC = () => {
                                     <label className="block text-xs font-bold uppercase tracking-widest text-gray-500">Password</label>
                                     <a href="#" className="text-xs text-violet-600 font-bold hover:text-violet-700">Forgot password?</a>
                                 </div>
-                                <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border-gray-200 focus:border-violet-600 focus:ring-violet-600 rounded-xl px-4 py-3 outline-none transition-all placeholder:text-gray-400 font-medium" />
+                                <input
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className="w-full bg-gray-50 border border-gray-200 focus:border-violet-600 focus:ring-2 focus:ring-violet-600/20 rounded-xl px-4 py-3 outline-none transition-all placeholder:text-gray-400 font-medium"
+                                />
                             </div>
 
                             <div className="space-y-4">
-                                <button type="button" className="w-full bg-violet-600 text-white py-4 rounded-xl font-bold text-lg shadow-xl shadow-violet-200 hover:bg-violet-700 hover:shadow-2xl hover:-translate-y-1 transition-all">
-                                    Sign In
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full bg-violet-600 text-white py-4 rounded-xl font-bold text-lg shadow-xl shadow-violet-200 hover:bg-violet-700 hover:shadow-2xl hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {loading ? 'Signing In...' : 'Sign In'}
                                 </button>
 
                                 <div className="relative flex py-2 items-center">
@@ -67,7 +125,12 @@ const Login: React.FC = () => {
                                     <div className="flex-grow border-t border-gray-100"></div>
                                 </div>
 
-                                <button type="button" className="w-full bg-white hover:bg-gray-50 text-gray-600 py-3 rounded-xl font-bold text-sm border border-gray-100 transition-all flex items-center justify-center gap-3">
+                                <button
+                                    type="button"
+                                    onClick={handleGoogleLogin}
+                                    disabled={loading}
+                                    className="w-full bg-white hover:bg-gray-50 text-gray-600 py-3 rounded-xl font-bold text-sm border border-gray-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
                                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -81,9 +144,9 @@ const Login: React.FC = () => {
 
                         <div className="mt-8 pt-8 border-t border-gray-100 text-center">
                             <p className="text-gray-500 text-sm mb-4">New to EDITH?</p>
-                            <button onClick={() => navigate('/signup')} className="text-violet-600 font-bold hover:text-violet-700 transition-colors">
+                            <Link to="/signup" className="text-violet-600 font-bold hover:text-violet-700 transition-colors">
                                 Create an Account
-                            </button>
+                            </Link>
                         </div>
 
                     </motion.div>

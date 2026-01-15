@@ -1,21 +1,54 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import Products from './pages/Products';
 import ComingSoon from './components/ComingSoon';
 
 const App: React.FC = () => {
    return (
-      <Router>
-         <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/coming-soon" element={<ComingSoon />} />
-         </Routes>
-      </Router>
+      <AuthProvider>
+         <Router>
+            <Routes>
+               {/* Public Routes */}
+               <Route path="/" element={<LandingPage />} />
+               <Route path="/login" element={<Login />} />
+               <Route path="/signup" element={<Signup />} />
+               <Route path="/coming-soon" element={<ComingSoon />} />
+
+               {/* Protected Routes */}
+               <Route
+                  path="/dashboard"
+                  element={
+                     <ProtectedRoute>
+                        <Dashboard />
+                     </ProtectedRoute>
+                  }
+               />
+               <Route
+                  path="/products"
+                  element={
+                     <ProtectedRoute>
+                        <Products />
+                     </ProtectedRoute>
+                  }
+               />
+               <Route
+                  path="/products"
+                  element={
+                     <ProtectedRoute>
+                        <Products />
+                     </ProtectedRoute>
+                  }
+               />
+            </Routes>
+         </Router>
+      </AuthProvider>
    );
 };
 
