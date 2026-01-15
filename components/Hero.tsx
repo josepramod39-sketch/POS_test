@@ -15,12 +15,12 @@ const Hero: React.FC = () => {
           <span className="inline-block px-3 py-1 bg-violet-100 text-violet-700 text-xs font-black uppercase tracking-widest rounded-full mb-6">
             1.99% PER SALE
           </span>
-          <h1 className="text-7xl lg:text-9xl font-black text-display mb-8 tracking-tighter leading-none">
-            Your phone <br /> 
-            <span className="text-violet-600">is your POS.</span>
+          <h1 className="text-6xl lg:text-8xl font-black text-display mb-8 tracking-tighter leading-none">
+            Your POS & <br /> 
+            <span className="text-violet-600">Inventory System.</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-lg leading-tight">
-            Accept contactless card payments in seconds using just your smartphone. No hardware, no waiting, no hidden fees with E.D.I.T.H Rp.
+             Accept payments and manage your stock from the palm of your hand. No hardware, no complex setups—just E.D.I.T.H Rp.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <button className="bg-violet-600 text-white px-10 py-5 pill-button text-lg font-bold shadow-xl shadow-violet-200 hover:bg-violet-700">

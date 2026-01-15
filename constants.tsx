@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CreditCard, Zap, ShieldCheck, DollarSign } from 'lucide-react';
+import { CreditCard, Zap, ShieldCheck, DollarSign, Package, TrendingUp } from 'lucide-react';
 import { Feature, Testimonial, FAQItem } from './types';
 
 export const PRIMARY_PURPLE = '#8B5CF6';
@@ -17,9 +17,19 @@ export const FEATURES: Feature[] = [
     description: "Your money hits your EDITH card instantly. Ready to spend."
   },
   {
+    icon: <Package className="w-6 h-6" />,
+    title: "Smart Inventory",
+    description: "Scan invoices to auto-update stock. Manage everything from your device."
+  },
+  {
+    icon: <TrendingUp className="w-6 h-6" />,
+    title: "Data Insights",
+    description: "Real-time analytics to spot trends and manage restocking."
+  },
+  {
     icon: <ShieldCheck className="w-6 h-6" />,
-    title: "Secure by design",
-    description: "Enterprise-grade encryption on every tap. No data stored."
+    title: "Local & Secure",
+    description: "Data stored locally. 5GB free cloud backup included for peace of mind."
   },
   {
     icon: <CreditCard className="w-6 h-6" />,
