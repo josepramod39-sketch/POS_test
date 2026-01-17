@@ -24,8 +24,11 @@ export interface Product {
   name: string;
   category: string;
   price: number;
-  stock: number;
+  stock_bt: number; // Bottles
+  stock_cs: number; // Cases
+  pack: number;     // Pack size (e.g. 6, 12, 24)
   sku: string;
+  upc?: string;     // Universal Product Code
   description?: string;
   imageUrl?: string;
   createdAt?: number;
@@ -54,4 +57,15 @@ export interface Sale {
   paymentMethod: 'cash' | 'card' | 'nfc';
   createdAt: number;
   userId: string;
+}
+
+export interface StockMovement {
+  id?: string;
+  productId: string;
+  productName: string;
+  type: 'PURCHASE' | 'SALE' | 'ADJ' | 'RETURN';
+  quantity: number;
+  unit: 'BT' | 'CS'; // Bottle or Case
+  timestamp: any;    // Firestore Timestamp or number
+  userId?: string;
 }

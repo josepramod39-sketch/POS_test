@@ -1,0 +1,15 @@
+body {
+    font-family: 'Inter', sans-serif;
+    scroll-behavior: smooth;
+}
+.text-display {
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+}
+.pill-button {
+    border-radius: 9999px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+.pill-button:hover {
+    transform: scale(1.02);
+}

@@ -2,6 +2,7 @@
 import React from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
+import InventoryFeature from '../components/InventoryFeature';
 import Features from '../components/Features';
 import Process from '../components/Process';
 import Testimonials from '../components/Testimonials';
@@ -19,6 +20,7 @@ const LandingPage: React.FC = () => {
             <Header />
             <main>
                 <Hero />
+                <InventoryFeature />
                 <Features />
 
                 {/* Simple Mid-Section Callout */}

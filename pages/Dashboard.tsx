@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
                         <nav className="hidden md:flex gap-6">
                             <a href="#" className="text-sm font-semibold text-violet-600 uppercase tracking-wider">Dashboard</a>
                             <a href="#" onClick={(e) => { e.preventDefault(); navigate('/coming-soon'); }} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Sales</a>
-                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('/coming-soon'); }} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Inventory</a>
+                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('/products'); }} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Inventory</a>
                             <a href="#" onClick={(e) => { e.preventDefault(); navigate('/coming-soon'); }} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Reports</a>
                         </nav>
                     </div>

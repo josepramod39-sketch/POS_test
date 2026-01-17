@@ -30,14 +30,7 @@ const App: React.FC = () => {
                      </ProtectedRoute>
                   }
                />
-               <Route
-                  path="/products"
-                  element={
-                     <ProtectedRoute>
-                        <Products />
-                     </ProtectedRoute>
-                  }
-               />
+
                <Route
                   path="/products"
                   element={
