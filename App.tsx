@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
+import Lottery from './pages/Lottery';
 import ComingSoon from './components/ComingSoon';
 
 const App: React.FC = () => {
@@ -36,6 +37,15 @@ const App: React.FC = () => {
                   element={
                      <ProtectedRoute>
                         <Products />
+                     </ProtectedRoute>
+                  }
+               />
+
+               <Route
+                  path="/lottery"
+                  element={
+                     <ProtectedRoute>
+                        <Lottery />
                      </ProtectedRoute>
                   }
                />

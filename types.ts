@@ -23,10 +23,14 @@ export interface Product {
   id?: string;
   name: string;
   category: string;
-  price: number;
+  // Pricing
+  price_bt: number; // Price per bottle
+  price_cs?: number; // Price per case (optional for now)
+
+  // Inventory
   stock_bt: number; // Bottles
   stock_cs: number; // Cases
-  pack: number;     // Pack size (e.g. 6, 12, 24)
+  pack_size: number; // Pack size (e.g. 6, 12, 24)
   sku: string;
   upc?: string;     // Universal Product Code
   description?: string;

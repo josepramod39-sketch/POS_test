@@ -10,14 +10,17 @@ import {
     Edit2,
     X,
     Scan,
-    Box
+    Box,
+    ArrowLeft
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, addProduct, recordStockMovement } from '../services/db';
 import { Product } from '../types';
 import ScannerOverlay from '../components/ScannerOverlay';
 
 const Products: React.FC = () => {
+    const navigate = useNavigate();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -134,9 +137,14 @@ const Products: React.FC = () => {
             <header className="bg-white border-b border-gray-100 sticky top-0 z-30">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <h1 className="text-2xl font-black tracking-tighter text-gray-900">Inventory</h1>
-                            <p className="text-gray-500 text-sm">Manage stock, prices, and catalog.</p>
+                        <div className="flex items-center gap-4">
+                            <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                <ArrowLeft className="text-gray-500" />
+                            </button>
+                            <div>
+                                <h1 className="text-2xl font-black tracking-tighter text-gray-900">Inventory</h1>
+                                <p className="text-gray-500 text-sm">Manage stock, prices, and catalog.</p>
+                            </div>
                         </div>
                         <div className="flex items-center gap-3">
                             <button

@@ -11,12 +11,16 @@ import {
     Plus,
     BarChart3,
     Users,
+    Receipt,
     Zap
 } from 'lucide-react';
+
+import POSInterface from '../components/POSInterface';
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+    const [activeTab, setActiveTab] = React.useState<'dashboard' | 'sales'>('dashboard');
 
     const handleLogout = async () => {
         try {
@@ -41,10 +45,11 @@ const Dashboard: React.FC = () => {
                             EDITH.Rp
                         </a>
                         <nav className="hidden md:flex gap-6">
-                            <a href="#" className="text-sm font-semibold text-violet-600 uppercase tracking-wider">Dashboard</a>
-                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('/coming-soon'); }} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Sales</a>
-                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('/products'); }} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Inventory</a>
-                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('/coming-soon'); }} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Reports</a>
+                            <button onClick={() => setActiveTab('dashboard')} className={`text-sm font-semibold uppercase tracking-wider transition-colors ${activeTab === 'dashboard' ? 'text-violet-600' : 'text-gray-500 hover:text-violet-600'}`}>Dashboard</button>
+                            <button onClick={() => setActiveTab('sales')} className={`text-sm font-semibold uppercase tracking-wider transition-colors ${activeTab === 'sales' ? 'text-violet-600' : 'text-gray-500 hover:text-violet-600'}`}>Sales (POS)</button>
+                            <button onClick={() => navigate('/products')} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Inventory</button>
+                            <button onClick={() => navigate('/lottery')} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Lottery</button>
+                            <button onClick={() => navigate('/coming-soon')} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Reports</button>
                         </nav>
                     </div>
 
@@ -85,127 +90,133 @@ const Dashboard: React.FC = () => {
 
             {/* Dashboard Content */}
             <main className="max-w-7xl mx-auto px-6 py-8">
-                {/* Welcome Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-8"
-                >
-                    <h1 className="text-3xl font-black tracking-tighter text-gray-900 mb-2">
-                        Welcome back, {displayName}! 👋
-                    </h1>
-                    <p className="text-gray-500">Here's what's happening with your business today.</p>
-                </motion.div>
-
-                {/* Quick Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {[
-                        { label: "Today's Sales", value: '$0.00', icon: CreditCard, color: 'violet', change: '+0%' },
-                        { label: 'Total Products', value: '0', icon: Package, color: 'blue', change: '0 items' },
-                        { label: 'Revenue (MTD)', value: '$0.00', icon: TrendingUp, color: 'green', change: '+0%' },
-                        { label: 'Transactions', value: '0', icon: BarChart3, color: 'orange', change: 'this month' },
-                    ].map((stat, index) => (
+                {activeTab === 'sales' ? (
+                    <POSInterface />
+                ) : (
+                    <>
+                        {/* Welcome Section */}
                         <motion.div
-                            key={stat.label}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow"
+                            className="mb-8"
                         >
-                            <div className="flex items-start justify-between mb-4">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${stat.color}-100`}>
-                                    <stat.icon className={`text-${stat.color}-600`} size={24} />
-                                </div>
-                                <span className="text-xs font-bold text-gray-400 uppercase">{stat.change}</span>
-                            </div>
-                            <p className="text-2xl font-black text-gray-900 mb-1">{stat.value}</p>
-                            <p className="text-sm text-gray-500">{stat.label}</p>
+                            <h1 className="text-3xl font-black tracking-tighter text-gray-900 mb-2">
+                                Welcome back, {displayName}! 👋
+                            </h1>
+                            <p className="text-gray-500">Here's what's happening with your business today.</p>
                         </motion.div>
-                    ))}
-                </div>
 
-                {/* Quick Actions */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                        className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100"
-                    >
-                        <h2 className="text-xl font-black text-gray-900 mb-6">Quick Actions</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {/* Quick Stats */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                             {[
-                                { label: 'New Sale', icon: Plus, color: 'violet', action: () => navigate('/coming-soon') },
-                                { label: 'Add Product', icon: Package, color: 'blue', action: () => navigate('/products') },
-                                { label: 'View Reports', icon: BarChart3, color: 'green', action: () => navigate('/coming-soon') },
-                                { label: 'Manage Team', icon: Users, color: 'orange', action: () => navigate('/coming-soon') },
-                            ].map((action) => (
-                                <button
-                                    key={action.label}
-                                    onClick={action.action}
-                                    className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors group"
+                                { label: "Today's Sales", value: '$0.00', icon: CreditCard, color: 'violet', change: '+0%' },
+                                { label: 'Total Products', value: '0', icon: Package, color: 'blue', change: '0 items' },
+                                { label: 'Revenue (MTD)', value: '$0.00', icon: TrendingUp, color: 'green', change: '+0%' },
+                                { label: 'Transactions', value: '0', icon: BarChart3, color: 'orange', change: 'this month' },
+                            ].map((stat, index) => (
+                                <motion.div
+                                    key={stat.label}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow"
                                 >
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${action.color}-100 group-hover:scale-110 transition-transform`}>
-                                        <action.icon className={`text-${action.color}-600`} size={24} />
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${stat.color}-100`}>
+                                            <stat.icon className={`text-${stat.color}-600`} size={24} />
+                                        </div>
+                                        <span className="text-xs font-bold text-gray-400 uppercase">{stat.change}</span>
                                     </div>
-                                    <span className="text-sm font-bold text-gray-700">{action.label}</span>
-                                </button>
+                                    <p className="text-2xl font-black text-gray-900 mb-1">{stat.value}</p>
+                                    <p className="text-sm text-gray-500">{stat.label}</p>
+                                </motion.div>
                             ))}
                         </div>
-                    </motion.div>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
-                        className="bg-gradient-to-br from-violet-600 to-violet-800 p-6 rounded-2xl text-white"
-                    >
-                        <div className="flex items-center gap-3 mb-4">
-                            <Zap size={24} />
-                            <h2 className="text-xl font-black">Get Started</h2>
-                        </div>
-                        <p className="text-violet-100 text-sm mb-6 leading-relaxed">
-                            Complete your setup to start accepting payments and managing inventory.
-                        </p>
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">✓</div>
-                                <span className="text-sm">Create account</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">2</div>
-                                <span className="text-sm text-violet-200">Add your first product</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">3</div>
-                                <span className="text-sm text-violet-200">Make your first sale</span>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
+                        {/* Quick Actions */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.4 }}
+                                className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100"
+                            >
+                                <h2 className="text-xl font-black text-gray-900 mb-6">Quick Actions</h2>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {[
+                                        { label: 'New Sale', icon: Plus, color: 'violet', action: () => setActiveTab('sales') },
+                                        { label: 'Lottery', icon: Receipt, color: 'pink', action: () => navigate('/lottery') },
+                                        { label: 'Add Product', icon: Package, color: 'blue', action: () => navigate('/products') },
+                                        { label: 'Manage Team', icon: Users, color: 'orange', action: () => navigate('/coming-soon') },
+                                    ].map((action) => (
+                                        <button
+                                            key={action.label}
+                                            onClick={action.action}
+                                            className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors group"
+                                        >
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${action.color}-100 group-hover:scale-110 transition-transform`}>
+                                                <action.icon className={`text-${action.color}-600`} size={24} />
+                                            </div>
+                                            <span className="text-sm font-bold text-gray-700">{action.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </motion.div>
 
-                {/* Recent Activity */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="bg-white p-6 rounded-2xl border border-gray-100"
-                >
-                    <h2 className="text-xl font-black text-gray-900 mb-6">Recent Activity</h2>
-                    <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <BarChart3 size={32} className="text-gray-400" />
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5 }}
+                                className="bg-gradient-to-br from-violet-600 to-violet-800 p-6 rounded-2xl text-white"
+                            >
+                                <div className="flex items-center gap-3 mb-4">
+                                    <Zap size={24} />
+                                    <h2 className="text-xl font-black">Get Started</h2>
+                                </div>
+                                <p className="text-violet-100 text-sm mb-6 leading-relaxed">
+                                    Complete your setup to start accepting payments and managing inventory.
+                                </p>
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">✓</div>
+                                        <span className="text-sm">Create account</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">2</div>
+                                        <span className="text-sm text-violet-200">Add your first product</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">3</div>
+                                        <span className="text-sm text-violet-200">Make your first sale</span>
+                                    </div>
+                                </div>
+                            </motion.div>
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">No activity yet</h3>
-                        <p className="text-gray-500 text-sm mb-6">Your recent transactions and updates will appear here.</p>
-                        <button
-                            onClick={() => navigate('/coming-soon')}
-                            className="bg-violet-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-violet-700 transition-colors"
+
+                        {/* Recent Activity */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 }}
+                            className="bg-white p-6 rounded-2xl border border-gray-100"
                         >
-                            Make Your First Sale
-                        </button>
-                    </div>
-                </motion.div>
+                            <h2 className="text-xl font-black text-gray-900 mb-6">Recent Activity</h2>
+                            <div className="text-center py-12">
+                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <BarChart3 size={32} className="text-gray-400" />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">No activity yet</h3>
+                                <p className="text-gray-500 text-sm mb-6">Your recent transactions and updates will appear here.</p>
+                                <button
+                                    onClick={() => setActiveTab('sales')}
+                                    className="bg-violet-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-violet-700 transition-colors"
+                                >
+                                    Make Your First Sale
+                                </button>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
             </main>
         </div>
     );

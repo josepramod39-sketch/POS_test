@@ -8,13 +8,16 @@ import {
     query,
     orderBy,
     serverTimestamp,
-    where
+    where,
+    runTransaction,
+    Timestamp
 } from "firebase/firestore";
 import { db } from "./firebase";
 export { db };
 import { Product, StockMovement } from "../types";
 
 const PRODUCTS_COLLECTION = "products";
+const TRANSACTIONS_COLLECTION = "transactions";
 
 // Add a new product
 export const addProduct = async (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -23,6 +26,10 @@ export const addProduct = async (product: Omit<Product, 'id' | 'createdAt' | 'up
             ...product,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
+            // Ensure default values for new fields
+            stock_bt: product.stock_bt || 0,
+            stock_cs: product.stock_cs || 0,
+            pack_size: product.pack_size || 1
         });
         return docRef.id;
     } catch (error) {
@@ -72,41 +79,89 @@ export const deleteProduct = async (id: string) => {
     }
 };
 
-// Record a stock movement
+// Record a stock movement (for manual adjustments)
 export const recordStockMovement = async (movement: Omit<StockMovement, 'id' | 'timestamp'>) => {
     try {
-        // 1. Record the movement in a 'movements' collection
         await addDoc(collection(db, "movements"), {
             ...movement,
             timestamp: serverTimestamp(),
         });
-
-        // 2. Update the product stock atomically
-        // Note: detailed case-breaking logic (converting cases to bottles) should preferably happen
-        // in UI or Cloud Function, but here we will do simple increments/decrements for now.
-        // For a robust system, we would read the product first to check if we need to break a case.
-
-        // Simple update for now (assuming pre-calculated or direct unit updates)
-        const productRef = doc(db, PRODUCTS_COLLECTION, movement.productId);
-
-        // We can't easily do partial field strings with variables in vanilla JS object keys without computed property names
-        // so we construct the update object.
-        const updatePayload: any = { updatedAt: serverTimestamp() };
-
-        // In a real app we'd use Firestore `increment` for atomicity: 
-        // import { increment } from "firebase/firestore";
-        // updatePayload[movement.unit === 'CS' ? 'stock_cs' : 'stock_bt'] = increment(movement.type === 'SALE' ? -movement.quantity : movement.quantity);
-
-        // IMPORTANT: Since we need to read the current stock to do complex math (like breaking a case),
-        // we should ideally do this inside a transaction. For this prototype, we'll assume the UI sends the *final* new values
-        // OR we just use the caller to call updateProduct separately.
-
-        // Let's rely on the caller to update the product stock for now, 
-        // or we can implement a transaction here if the user wants strict consistency.
-        // For this step, we will primarily Log the movement here.
-
     } catch (error) {
         console.error("Error recording movement:", error);
         throw error;
+    }
+};
+
+export interface CartItem extends Product {
+    quantity: number; // Bottles
+}
+
+// Create a Transaction (POS Sale)
+export const createTransaction = async (items: CartItem[], totalAmount: number, userId: string) => {
+    if (!items.length) throw new Error("Cart is empty");
+
+    try {
+        await runTransaction(db, async (transaction) => {
+            // 1. Read all product docs first (Firestore requirement: reads before writes)
+            const productReads = [];
+            for (const item of items) {
+                const ref = doc(db, PRODUCTS_COLLECTION, item.id);
+                productReads.push({ ref, item });
+            }
+
+            const productDocs = await Promise.all(productReads.map(p => transaction.get(p.ref)));
+
+            // 2. Validate Stock
+            for (let i = 0; i < productDocs.length; i++) {
+                const snapshot = productDocs[i];
+                if (!snapshot.exists()) {
+                    throw new Error(`Product ${productReads[i].item.name} not found.`);
+                }
+
+                const currentData = snapshot.data() as Product;
+                const requestedQty = productReads[i].item.quantity;
+                const currentBt = currentData.stock_bt || 0;
+
+                if (currentBt < requestedQty) {
+                    throw new Error(`Insufficient stock for ${currentData.name}. Available: ${currentBt} bottles.`);
+                }
+            }
+
+            // 3. Process Updates & Create Transaction Record
+
+            // A. Create Transaction Entry
+            const transactionRef = doc(collection(db, TRANSACTIONS_COLLECTION));
+            transaction.set(transactionRef, {
+                userId,
+                totalAmount,
+                itemCount: items.length,
+                status: 'COMPLETED',
+                items: items.map(i => ({
+                    id: i.id,
+                    name: i.name,
+                    price: i.price_bt, // Assuming bottle price
+                    quantity: i.quantity
+                })),
+                timestamp: serverTimestamp()
+            });
+
+            // B. Deduct Inventory
+            for (let i = 0; i < productDocs.length; i++) {
+                const snapshot = productDocs[i];
+                const item = productReads[i].item;
+                const currentData = snapshot.data() as Product;
+
+                transaction.update(productReads[i].ref, {
+                    stock_bt: (currentData.stock_bt || 0) - item.quantity,
+                    updatedAt: serverTimestamp()
+                });
+            }
+        });
+
+        console.log("Transaction successfully committed!");
+        return true;
+    } catch (e) {
+        console.error("Transaction failed: ", e);
+        throw e;
     }
 };
