@@ -1,11 +1,13 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { RetroGrid } from './ui/retro-grid';
 
 const Hero: React.FC = () => {
   return (
     <section className="relative min-h-screen pt-32 pb-20 flex items-center bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+      <RetroGrid className="z-0" />
+      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -23,7 +25,7 @@ const Hero: React.FC = () => {
             Accept payments and manage your stock from the palm of your hand. No hardware, no complex setups—just E.D.I.T.H Rp.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-violet-600 text-white px-10 py-5 pill-button text-lg font-bold shadow-xl shadow-violet-200 hover:bg-violet-700">
+            <button className="bg-violet-600 text-white px-10 py-5 pill-button text-lg font-bold shadow-xl shadow-violet-200 hover:bg-violet-700 transition-colors">
               Get started now
             </button>
             <div className="flex -space-x-3 items-center mt-4 sm:mt-0 sm:ml-6">
@@ -80,7 +82,7 @@ const Hero: React.FC = () => {
       </div>
 
       {/* Logos Bar */}
-      <div className="absolute bottom-0 left-0 right-0 py-8 bg-gray-50 border-t border-gray-100">
+      <div className="absolute bottom-0 left-0 right-0 py-8 bg-gray-50 border-t border-gray-100 z-10">
         <div className="max-w-7xl mx-auto px-6 overflow-hidden">
           <div className="flex items-center justify-center gap-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-700 pointer-events-none">
             <span className="font-black text-xl italic">VISA</span>

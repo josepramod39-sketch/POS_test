@@ -18,6 +18,11 @@ import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } fro
 import { db, addProduct, recordStockMovement } from '../services/db';
 import { Product } from '../types';
 import ScannerOverlay from '../components/ScannerOverlay';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog"
+import { Button } from "../components/ui/button"
+import { Input } from "../components/ui/input"
+import { Label } from "../components/ui/label"
+import { BorderBeam } from "../components/ui/border-beam"
 
 const Products: React.FC = () => {
     const navigate = useNavigate();
@@ -208,8 +213,9 @@ const Products: React.FC = () => {
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
-                                    className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"
+                                    className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden"
                                 >
+                                    <BorderBeam size={250} duration={12} delay={9} />
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center gap-4">
                                             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${product.category === 'Spirits' ? 'bg-amber-50 text-amber-600' :
@@ -269,82 +275,75 @@ const Products: React.FC = () => {
                 )}
 
                 {/* Add Product Modal */}
-                {isAddModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                        <motion.div
-                            initial={{ opacity: 0, y: 50 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-3xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto"
-                        >
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-black tracking-tight">Add New Product</h2>
-                                <button onClick={() => setIsAddModalOpen(false)}><X className="text-gray-400 hover:text-black" /></button>
+                <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                    <DialogContent className="sm:max-w-lg bg-white rounded-3xl">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black tracking-tight">Add New Product</DialogTitle>
+                        </DialogHeader>
+
+                        <form onSubmit={handleAddProduct} className="space-y-4 py-4">
+                            <div>
+                                <Label className="text-sm font-bold text-gray-700 mb-1">Product Name</Label>
+                                <Input required className="bg-gray-50 border-gray-200 rounded-xl focus-visible:ring-violet-600"
+                                    value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label className="text-sm font-bold text-gray-700 mb-1">SKU</Label>
+                                    <Input required className="bg-gray-50 border-gray-200 rounded-xl"
+                                        value={formData.sku} onChange={e => setFormData({ ...formData, sku: e.target.value })} />
+                                </div>
+                                <div>
+                                    <Label className="text-sm font-bold text-gray-700 mb-1">UPC (Barcode)</Label>
+                                    <Input className="bg-gray-50 border-gray-200 rounded-xl"
+                                        value={formData.upc} onChange={e => setFormData({ ...formData, upc: e.target.value })} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div>
+                                    <Label className="text-sm font-bold text-gray-700 mb-1">Price</Label>
+                                    <Input type="number" required className="bg-gray-50 border-gray-200 rounded-xl"
+                                        value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} />
+                                </div>
+                                <div>
+                                    <Label className="text-sm font-bold text-gray-700 mb-1">Category</Label>
+                                    <select className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
+                                        <option>Spirits</option>
+                                        <option>Wine</option>
+                                        <option>Beer</option>
+                                        <option>Mixers</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <Label className="text-sm font-bold text-gray-700 mb-1">Pack Size</Label>
+                                    <select className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        value={formData.pack} onChange={e => setFormData({ ...formData, pack: Number(e.target.value) })}>
+                                        <option value={6}>6</option>
+                                        <option value={12}>12</option>
+                                        <option value={24}>24</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <div>
+                                    <Label className="text-xs font-bold text-gray-500 uppercase mb-1">Initial Bottles</Label>
+                                    <Input type="number" className="bg-white border-gray-200 rounded-lg p-2 font-bold"
+                                        value={formData.stock_bt} onChange={e => setFormData({ ...formData, stock_bt: Number(e.target.value) })} />
+                                </div>
+                                <div>
+                                    <Label className="text-xs font-bold text-gray-500 uppercase mb-1">Initial Cases</Label>
+                                    <Input type="number" className="bg-white border-gray-200 rounded-lg p-2 font-bold"
+                                        value={formData.stock_cs} onChange={e => setFormData({ ...formData, stock_cs: Number(e.target.value) })} />
+                                </div>
                             </div>
 
-                            <form onSubmit={handleAddProduct} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Product Name</label>
-                                    <input required className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-medium focus:ring-2 focus:ring-violet-600 outline-none"
-                                        value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">SKU</label>
-                                        <input required className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-medium"
-                                            value={formData.sku} onChange={e => setFormData({ ...formData, sku: e.target.value })} />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">UPC (Barcode)</label>
-                                        <input className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-medium"
-                                            value={formData.upc} onChange={e => setFormData({ ...formData, upc: e.target.value })} />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">Price</label>
-                                        <input type="number" required className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-medium"
-                                            value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
-                                        <select className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-medium"
-                                            value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
-                                            <option>Spirits</option>
-                                            <option>Wine</option>
-                                            <option>Beer</option>
-                                            <option>Mixers</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">Pack Size</label>
-                                        <select className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-medium"
-                                            value={formData.pack} onChange={e => setFormData({ ...formData, pack: Number(e.target.value) })}>
-                                            <option value={6}>6</option>
-                                            <option value={12}>12</option>
-                                            <option value={24}>24</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Initial Bottles</label>
-                                        <input type="number" className="w-full bg-white border border-gray-200 rounded-lg p-2 font-bold"
-                                            value={formData.stock_bt} onChange={e => setFormData({ ...formData, stock_bt: Number(e.target.value) })} />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Initial Cases</label>
-                                        <input type="number" className="w-full bg-white border border-gray-200 rounded-lg p-2 font-bold"
-                                            value={formData.stock_cs} onChange={e => setFormData({ ...formData, stock_cs: Number(e.target.value) })} />
-                                    </div>
-                                </div>
-
-                                <button type="submit" className="w-full bg-black text-white font-bold py-4 rounded-xl hover:bg-gray-900 transition-colors mt-4">
-                                    Save Product
-                                </button>
-                            </form>
-                        </motion.div>
-                    </div>
-                )}
+                            <Button type="submit" className="w-full bg-black text-white font-bold py-6 rounded-xl hover:bg-gray-900 mt-4">
+                                Save Product
+                            </Button>
+                        </form>
+                    </DialogContent>
+                </Dialog>
 
                 {/* Scanner Overlay */}
                 <AnimatePresence>
