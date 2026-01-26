@@ -227,8 +227,8 @@ const POSInterface: React.FC = () => {
                         onClick={handleCheckout}
                         disabled={cart.length === 0 || processing}
                         className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${cart.length === 0 || processing
-                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-200'
+                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            : 'bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-200'
                             }`}
                     >
                         {processing ? (

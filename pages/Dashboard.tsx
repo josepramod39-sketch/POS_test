@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
                             <button onClick={() => setActiveTab('sales')} className={`text-sm font-semibold uppercase tracking-wider transition-colors ${activeTab === 'sales' ? 'text-violet-600' : 'text-gray-500 hover:text-violet-600'}`}>Sales (POS)</button>
                             <button onClick={() => navigate('/products')} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Inventory</button>
                             <button onClick={() => navigate('/lottery')} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Lottery</button>
-                            <button onClick={() => navigate('/coming-soon')} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Reports</button>
+                            <button onClick={() => navigate('/reports')} className="text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors uppercase tracking-wider">Reports</button>
                         </nav>
                     </div>
 

@@ -9,6 +9,7 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import Lottery from './pages/Lottery';
+import Reports from './pages/Reports';
 import ComingSoon from './components/ComingSoon';
 
 const App: React.FC = () => {
@@ -46,6 +47,15 @@ const App: React.FC = () => {
                   element={
                      <ProtectedRoute>
                         <Lottery />
+                     </ProtectedRoute>
+                  }
+               />
+
+               <Route
+                  path="/reports"
+                  element={
+                     <ProtectedRoute>
+                        <Reports />
                      </ProtectedRoute>
                   }
                />
